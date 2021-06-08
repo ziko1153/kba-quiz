@@ -21,7 +21,10 @@ class QuizController extends Controller
 {
 
 
-    public function getQuizzes(){
+    public function getQuizzes(Request $request){
+
+        $language = $request->header('language','bn');
+
 
         $user = JWTAuth::user();
 
@@ -29,11 +32,11 @@ class QuizController extends Controller
 
         if($leaderboard) {
 
-            return response()->json(['message' => 'দুঃখিত আপনি ইতিমধ্যে কুইজটি খেলে ফেলেছেন। দ্বিতীয়বার কুইজ খেলার সুযোগ নেই'],420);
+            return response()->json(['message' =>  ($language == 'bn')? 'দুঃখিত আপনি ইতিমধ্যে কুইজটি   খেলে ফেলেছেন। পুনরায় কুইজ খেলার সুযোগ নেই' : 'Sorry Already Quiz Played .You can not play this quiz again'],420);
         }
 
         if($user->quizStart == 2 || $user->quizStart>2) {
-            return response()->json(['message' => 'দুঃখিত আপনি ইতিমধ্যে কুইজটি  দুইবার খেলে ফেলেছেন। পুনরায় কুইজ খেলার সুযোগ নেই'],420);
+            return response()->json(['message' =>  ($language == 'bn')? 'দুঃখিত আপনি ইতিমধ্যে কুইজটি  দুইবার খেলে ফেলেছেন। পুনরায় কুইজ খেলার সুযোগ নেই' : 'Sorry Already Played 2 times.You can not play this quiz again'],420);
         }
 
         return QuizResourceCollection::collection(Quiz::with('questions.answers')->orderBy('id', 'desc')->get());
