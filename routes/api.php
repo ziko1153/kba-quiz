@@ -39,11 +39,12 @@ Route::group([
 
     Route::prefix('participant')->group(function () {
         Route::get('all', 'API\Participant\ParticipantController@getParticipants');
+        Route::post('update', 'API\Participant\ParticipantController@updateParticipant');
         Route::get('/{participantId}', 'API\Participant\ParticipantController@getParticipant')->where('participantId', '[0-9]+');
     });
     
     Route::prefix('participant')->group(function () {
-        Route::get('logout', 'API\Participant\AuthController@logout');
+        Route::post('logout', 'API\Participant\AuthController@logout');
     });
 
     Route::prefix('participate')->group(function () {

@@ -2,31 +2,24 @@
 
 namespace App\Http\Traits;
 
-use Storage;
 use File;
 
-trait ImageHandleTraits{
-
-    public function checkValidImage($image)
-    {
-        $extention = $image->getClientOriginalExtension();
-        if ($extention === 'jpg' || $extention === 'jpeg' ||  $extention === 'png' || $extention === 'gif' || $extention === 'svg') {
-            return $extention;
-        } else {
-            return 'Invalid image format. Please try again';
-        }
-    }
-
+trait ImageHandleTraits
+{
     public function uploadImage($image, $path)
     {
-        $imageNewName = time() . "." . $this->checkValidImage($image);
-        Storage::disk('public')->putFileAs("images/$path/", $image, $imageNewName);
-        return $imageNewName;
+        $newName = rand() . '.' . $image->getClientOriginalExtension();
+
+        $image->move(public_path($path), $newName);
+
+        return $newName;
     }
+
 
     public function deleteImage($image, $path)
     {
-        $oldImagePath = public_path("/storage/images/$path/$image");
+        $oldImagePath = public_path() . '/images/'.$path.'/' . $image;
+
         if (File::exists($oldImagePath)) {
             return File::delete($oldImagePath);
         } else {

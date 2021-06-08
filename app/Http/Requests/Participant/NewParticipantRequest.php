@@ -26,6 +26,7 @@ class NewParticipantRequest extends FormRequest
         return [
             'fullName' => 'required',
             'email' => 'required|email|unique:participants,email',
+            'avatar' =>  'sometimes|mimes:jpg,jpeg,png|max:300',
             'contactNumber' => 'required|digits:11|unique:participants,contactNumber',
             'address' => 'required',
             'gender' => 'required',

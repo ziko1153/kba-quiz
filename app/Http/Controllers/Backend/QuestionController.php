@@ -78,7 +78,7 @@ class QuestionController extends Controller
     }
 
     public function update(Request $request)
-    {
+    { 
         $question = Question::findOrFail($request->questionId);
         if ($request->has('thumbnail')) {
             $this->deleteImage($question->thumbnail, 'question/thumbnail');
@@ -90,7 +90,7 @@ class QuestionController extends Controller
             $question->thumbnail_bn = $this->uploadImage($request->file('thumbnail_bn'), 'question/thumbnail_bn');
         }
     
-        $question->quiz_id = $request->quiz;
+        $question->quizId = $request->quiz;
         // $question->title_en = $request->titleEn;
         // $question->title_bn = $request->titleBn;
         $question->status = $request->status;
@@ -103,22 +103,22 @@ class QuestionController extends Controller
                 
                 if(isset($answers[$key]) && (int)$answers[$key]->id === (int)$answerId[$key]){
                     $answers[$key]->questionId = $question->id;
-                    $answers[$key]->title_en = $answerEn[$key];
-                    $answers[$key]->title_bn = $answerBn[$key];
-                    $answers[$key]->right_answer = $rightAns;
+                    $answers[$key]->titleEn = $answerEn[$key];
+                    $answers[$key]->titleBn = $answerBn[$key];
+                    $answers[$key]->rightAnswer = $rightAns;
                     $answers[$key]->status = $request->status;
                     $answers[$key]->save();
                 }else{
                     $newAnswer = new Answer();
                     $newAnswer->questionId = $question->id;
-                    $newAnswer->title_en = $answerEn[$key];
-                    $newAnswer->title_bn = $answerBn[$key];
-                    $newAnswer->right_answer = $rightAns;
+                    $newAnswer->titleEn = $answerEn[$key];
+                    $newAnswer->titleBn = $answerBn[$key];
+                    $newAnswer->rightAnswer = $rightAns;
                     $newAnswer->status = $request->status;
                     $newAnswer->save();
                 }
             }
-            return redirect('management/question/list')->with(['class' => 'callout-success', 'message' => 'Question added']);
+            return redirect('management/question/list')->with(['class' => 'callout-success', 'message' => 'Question Updated']);
         }else {
             return back()->with(['class' => 'callout-danger', 'message' => 'Please try again!']);
         }

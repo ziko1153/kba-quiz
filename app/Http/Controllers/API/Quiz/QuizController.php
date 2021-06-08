@@ -12,6 +12,8 @@ use App\Leaderboard;
 use App\Models\Participant;
 // Model
 use App\Models\Quiz;
+use App\QuizStart;
+use Illuminate\Support\Facades\DB;
 use JWTAuth;
 use Tymon\JWTAuth\Facades\JWTAuth as FacadesJWTAuth;
 
@@ -23,8 +25,15 @@ class QuizController extends Controller
 
         $user = JWTAuth::user();
 
-        if($user->quizStart == 1) {
+        $leaderboard = Leaderboard::where('participantId',$user->id)->first();
+
+        if($leaderboard) {
+
             return response()->json(['message' => 'দুঃখিত আপনি ইতিমধ্যে কুইজটি খেলে ফেলেছেন। দ্বিতীয়বার কুইজ খেলার সুযোগ নেই'],420);
+        }
+
+        if($user->quizStart == 2 || $user->quizStart>2) {
+            return response()->json(['message' => 'দুঃখিত আপনি ইতিমধ্যে কুইজটি  দুইবার খেলে ফেলেছেন। পুনরায় কুইজ খেলার সুযোগ নেই'],420);
         }
 
         return QuizResourceCollection::collection(Quiz::with('questions.answers')->orderBy('id', 'desc')->get());
@@ -35,12 +44,27 @@ class QuizController extends Controller
 
         $user = Participant::find($user->id);
 
-        if($user->quizStart == 1)  return response()->json('Already Started');
+        $leaderboard = Leaderboard::where('participantId',$user->id)->first();
 
-        $user->quizStart = 1; 
+        if($leaderboard) {
+
+            return response()->json(['error' => 'Already Quiz Played'],422);
+        }
+
+        if($user->quizStart == 2 || $user->quizStart >2 )  return response()->json(['error' => 'Already Quiz Played'],422);
+
+        $user->quizStart =  $user->quizStart + 1; 
         $user->quizStartTime = $request->date;
 
         if($user->save()) {
+
+            $quizeStart = new QuizStart;
+
+            $quizeStart->participantId = $user->id;
+            $quizeStart->quizStartTime = date('Y-m-d H:i:s',$request->date/1000);
+
+            $quizeStart->save();
+            
             return response()->json('success');
         }
       

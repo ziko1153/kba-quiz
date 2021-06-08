@@ -20,6 +20,14 @@ class QuestionController extends Controller
 
         $user = Participant::find($user->id);
 
+        $leaderboard = Leaderboard::where('participantId',$user->id)->first();
+
+        if($leaderboard) {
+
+            return response()->json(['error' => 'Already Quiz Played'],422);
+        }
+
+
         $diff = $request->endTime -  $user->quizStartTime; /// here find the miliseconds for finsihing the quiz 
 
         $submitAnswer = [];
@@ -55,7 +63,7 @@ class QuestionController extends Controller
             $result = count($submitAnswer).' টি প্রশ্নের ভিতর '.$correctAnswer.' টি প্রশ্নের সঠিক উত্তর দিয়েছেন';
             return response()->json(['message'=>$result,'diff' => $diff,'second' => $diff/1000,'answer' => $submitAnswer,'corectAnswer' => $correctAnswer]);
         }else {
-            return response()->json(['message'=>'Internal Server Error']); 
+            return response()->json(['message'=>'Internal Server Error'],422); 
         }
 
       
